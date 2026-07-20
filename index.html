@@ -1,11 +1,264 @@
 <!DOCTYPE html>
-<html>
+<html lang="uz">
 <head>
-    <title>Mening Saytim</title>
+<meta charset="UTF-8">
+<title>Dadaboev app expenses</title></title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f2f2f2;
+text-align:center;
+transition:0.3s;
+}
+
+.dark{
+background:#111;
+color:white;
+}
+
+.box{
+width:380px;
+max-width:90%;
+margin:30px auto;
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 0 15px gray;
+}
+
+.dark .box{
+background:#222;
+}
+
+input{
+width:90%;
+padding:12px;
+margin:6px;
+border-radius:8px;
+border:1px solid #aaa;
+font-size:16px;
+}
+
+button{
+padding:10px 15px;
+border:0;
+border-radius:8px;
+cursor:pointer;
+background:green;
+color:white;
+margin:5px;
+font-size:15px;
+}
+
+.delete{
+background:red;
+}
+
+.darkBtn{
+background:#333;
+}
+
+li{
+list-style:none;
+background:#eee;
+margin:10px 0;
+padding:12px;
+border-radius:10px;
+text-align:left;
+}
+
+.dark li{
+background:#333;
+}
+
+h1{
+font-size:28px;
+}
+
+</style>
 </head>
+
 <body>
-    <h1>Assalomu alaykum!</h1>
-    <p>Bu mening birinchi web sahifam. </p>
-    <button onclick="alert('Salom!')">Bos meni</button>
+
+<button class="darkBtn" onclick="darkMode()">🌙 Dark Mode</button>
+
+<div class="box">
+
+<h1>💰 dadaboev hisoblagich</h1>
+
+<input id="daromad" type="number" placeholder="Daromad">
+
+<input id="kategoriya" placeholder="Kategoriya">
+
+<input id="nom" placeholder="Xarajat nomi">
+
+<input id="summa" type="number" placeholder="Xarajat summasi">
+
+<input id="sana" type="date">
+
+<br>
+
+<button onclick="qosh()">➕ Qo'shish</button>
+
+<input id="qidiruv" placeholder="🔍 Qidirish" onkeyup="qidir()">
+
+<h2 id="natija"></h2>
+
+<h3 id="jami"></h3>
+
+<ul id="royxat"></ul>
+
+</div>
+<script>
+
+let xarajatlar = JSON.parse(localStorage.getItem("xarajatlar")) || [];
+
+
+function saqla(){
+localStorage.setItem("xarajatlar", JSON.stringify(xarajatlar));
+}
+
+
+function qosh(){
+
+let kategoriya=document.getElementById("kategoriya").value;
+let nom=document.getElementById("nom").value;
+let summa=Number(document.getElementById("summa").value);
+let sana=document.getElementById("sana").value;
+
+
+if(nom=="" || summa<=0){
+alert("Ma'lumot kiriting!");
+return;
+}
+
+
+xarajatlar.push({
+kategoriya:kategoriya,
+nom:nom,
+summa:summa,
+sana:sana
+});
+
+
+saqla();
+chiqar();
+
+
+document.getElementById("kategoriya").value="";
+document.getElementById("nom").value="";
+document.getElementById("summa").value="";
+document.getElementById("sana").value="";
+
+}
+
+
+
+function chiqar(){
+
+let royxat=document.getElementById("royxat");
+
+royxat.innerHTML="";
+
+let jami=0;
+
+
+xarajatlar.forEach(function(x,index){
+
+jami += x.summa;
+
+
+let li=document.createElement("li");
+
+li.innerHTML =
+"📂 "+x.kategoriya+
+"<br>📝 "+x.nom+
+"<br>💵 "+x.summa+" so'm"+
+"<br>📅 "+x.sana+
+'<br><button class="delete" onclick="ochir('+index+')">🗑️ O\'chirish</button>';
+
+
+royxat.appendChild(li);
+
+});
+
+
+let daromad=Number(document.getElementById("daromad").value);
+
+
+document.getElementById("jami").innerHTML=
+"📊 Jami xarajat: "+jami+" so'm";
+
+
+let qolgan=daromad-jami;
+
+
+let natija=document.getElementById("natija");
+
+natija.innerHTML=
+"💰 Qolgan pul: "+qolgan+" so'm";
+
+
+if(qolgan>=0){
+natija.style.color="green";
+}else{
+natija.style.color="red";
+}
+
+}
+
+
+
+function ochir(index){
+
+xarajatlar.splice(index,1);
+
+saqla();
+
+chiqar();
+
+}
+
+
+
+function darkMode(){
+
+document.body.classList.toggle("dark");
+
+}
+
+
+
+function qidir(){
+
+let text=document.getElementById("qidiruv").value.toLowerCase();
+
+let items=document.querySelectorAll("#royxat li");
+
+
+items.forEach(function(item){
+
+if(item.innerText.toLowerCase().includes(text)){
+item.style.display="block";
+}else{
+item.style.display="none";
+}
+
+});
+
+}
+
+
+
+document.getElementById("daromad")
+.addEventListener("input", chiqar);
+
+
+chiqar();
+
+
+</script>
+
 </body>
 </html>
