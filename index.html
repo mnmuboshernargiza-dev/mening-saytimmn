@@ -2,91 +2,53 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<title>Dadaboev app expenses</title></title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dadaboev App Expenses</title>
 
 <style>
-body{
-font-family:Arial,sans-serif;
-background:#f2f2f2;
-text-align:center;
-transition:0.3s;
-}
-
-.dark{
-background:#111;
-color:white;
-}
-
-.box{
-width:380px;
-max-width:90%;
-margin:30px auto;
-background:white;
-padding:20px;
-border-radius:20px;
-box-shadow:0 0 15px gray;
-}
-
-.dark .box{
-background:#222;
-}
-
-input{
-width:90%;
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#f2f2f2;padding:20px;transition:.3s}
+.dark{background:#111;color:#fff}
+.box{max-width:420px;margin:auto;background:#fff;padding:20px;border-radius:20px;box-shadow:0 0 15px gray}
+.dark .box{background:#222}
+h1{text-align:center;margin-bottom:15px}
+input,select,button{
+width:100%;
 padding:12px;
-margin:6px;
-border-radius:8px;
-border:1px solid #aaa;
+margin:6px 0;
+border-radius:10px;
+border:1px solid #bbb;
 font-size:16px;
 }
-
 button{
-padding:10px 15px;
-border:0;
-border-radius:8px;
+background:#16a34a;
+color:#fff;
+border:none;
 cursor:pointer;
-background:green;
-color:white;
-margin:5px;
-font-size:15px;
 }
-
-.delete{
-background:red;
-}
-
-.darkBtn{
+#darkBtn{
 background:#333;
 }
-
 li{
 list-style:none;
 background:#eee;
-margin:10px 0;
-padding:12px;
+margin-top:10px;
+padding:10px;
 border-radius:10px;
-text-align:left;
 }
-
 .dark li{
 background:#333;
 }
-
-h1{
-font-size:28px;
-}
-
 </style>
+
 </head>
-
 <body>
-
-<button class="darkBtn" onclick="darkMode()">🌙 Dark Mode</button>
 
 <div class="box">
 
-<h1>💰 dadaboev hisoblagich</h1>
+<button id="darkBtn">🌙 Dark Mode</button>
 
+<h1>💰 Dadaboev Hisoblagich</h1>
 <input id="daromad" type="number" placeholder="Daromad">
 
 <input id="kategoriya" placeholder="Kategoriya">
@@ -97,7 +59,12 @@ font-size:28px;
 
 <input id="sana" type="date">
 
-<br>
+<select id="valyuta">
+<option>🇺🇿 UZS</option>
+<option>🇺🇸 USD</option>
+<option>🇪🇺 EUR</option>
+<option>🇷🇺 RUB</option>
+</select>
 
 <button onclick="qosh()">➕ Qo'shish</button>
 
@@ -110,155 +77,80 @@ font-size:28px;
 <ul id="royxat"></ul>
 
 </div>
+
 <script>
 
-let xarajatlar = JSON.parse(localStorage.getItem("xarajatlar")) || [];
-
-
-function saqla(){
-localStorage.setItem("xarajatlar", JSON.stringify(xarajatlar));
-}
-
+let xarajatlar=[];
 
 function qosh(){
 
-let kategoriya=document.getElementById("kategoriya").value;
 let nom=document.getElementById("nom").value;
+let kategoriya=document.getElementById("kategoriya").value;
 let summa=Number(document.getElementById("summa").value);
 let sana=document.getElementById("sana").value;
 
-
-if(nom=="" || summa<=0){
+if(nom==""||summa<=0){
 alert("Ma'lumot kiriting!");
 return;
 }
 
+xarajatlar.push({nom,kategoriya,summa,sana});
 
-xarajatlar.push({
-kategoriya:kategoriya,
-nom:nom,
-summa:summa,
-sana:sana
-});
-
-
-saqla();
 chiqar();
 
-
-document.getElementById("kategoriya").value="";
-document.getElementById("nom").value="";
-document.getElementById("summa").value="";
-document.getElementById("sana").value="";
-
 }
-
-
-
 function chiqar(){
 
 let royxat=document.getElementById("royxat");
-
 royxat.innerHTML="";
 
 let jami=0;
 
-
 xarajatlar.forEach(function(x,index){
 
-jami += x.summa;
-
+jami+=x.summa;
 
 let li=document.createElement("li");
 
-li.innerHTML =
+li.innerHTML=
 "📂 "+x.kategoriya+
 "<br>📝 "+x.nom+
-"<br>💵 "+x.summa+" so'm"+
+"<br>💵 "+x.summa+
 "<br>📅 "+x.sana+
-'<br><button class="delete" onclick="ochir('+index+')">🗑️ O\'chirish</button>';
-
+'<br><button onclick="ochir('+index+')">🗑️ Oʻchirish</button>';
 
 royxat.appendChild(li);
 
 });
 
+document.getElementById("jami").innerHTML="📊 Jami: "+jami+" soʻm";
 
 let daromad=Number(document.getElementById("daromad").value);
 
-
-document.getElementById("jami").innerHTML=
-"📊 Jami xarajat: "+jami+" so'm";
-
-
 let qolgan=daromad-jami;
 
-
-let natija=document.getElementById("natija");
-
-natija.innerHTML=
-"💰 Qolgan pul: "+qolgan+" so'm";
-
-
-if(qolgan>=0){
-natija.style.color="green";
-}else{
-natija.style.color="red";
-}
+document.getElementById("natija").innerHTML="💰 Qolgan: "+qolgan+" soʻm";
 
 }
-
-
 
 function ochir(index){
 
 xarajatlar.splice(index,1);
 
-saqla();
-
 chiqar();
 
 }
-
-
-
-function darkMode(){
-
-document.body.classList.toggle("dark");
-
-}
-
-
 
 function qidir(){
 
 let text=document.getElementById("qidiruv").value.toLowerCase();
 
-let items=document.querySelectorAll("#royxat li");
+document.querySelectorAll("#royxat li").forEach(function(item){
 
-
-items.forEach(function(item){
-
-if(item.innerText.toLowerCase().includes(text)){
-item.style.display="block";
-}else{
-item.style.display="none";
-}
+item.style.display=item.innerText.toLowerCase().includes(text)?"block":"none";
 
 });
 
 }
 
-
-
-document.getElementById("daromad")
-.addEventListener("input", chiqar);
-
-
-chiqar();
-
-
-</script>
-
-</body>
-</html>
+document.getElementById("darkBtn
